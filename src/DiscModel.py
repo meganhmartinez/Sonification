@@ -25,7 +25,7 @@ class DiscGalaxy(object):
         self.a = a # scale length of the disc
         self.M = M # total mass of the disc
         self.vcirc = vcirc # circular velocity of the disc
-        self.rmax = rmax   # maximum radius of the disc
+        self.rmax = rmax*a   # maximum radius of the disc
 
         if N is not None:
             self.N = N # number of particles in the disc
@@ -44,6 +44,7 @@ class DiscGalaxy(object):
         def menclosed(r,a=self.a,m=self.M):
             return m*(1.0 - np.exp(-r/a)*(1.0+r/a))
 
+        
         f = interpolate.interp1d(menclosed(x),x)
 
         # pull a bunch of points: pick a random radius in the disc
@@ -202,7 +203,7 @@ class DiscGalaxy(object):
 
         rval = np.sqrt(xpix**2+ypix**2).reshape(-1,)
         phi  = np.arctan2(ypix,xpix).reshape(-1,)
-        snapshotflat = snapshot.reshape(-1,) * (dx*dx)
+        """ snapshotflat = snapshot.reshape(-1,) * (dx*dx)
 
         # create a mask for pixels outside the maximum radius
         gvals = np.where(rval>xmax)
@@ -211,8 +212,25 @@ class DiscGalaxy(object):
         #phi[gvals]          = np.nan
         snapshotflat[gvals] = np.nan
 
-        laguerre = LaguerreAmplitudes(rscl,mmax,nmax,rval,phi,snapshotflat)
+        laguerre = LaguerreAmplitudes(rscl,mmax,nmax,rval,phi,snapshotflat) """
+        snapshotflat = snapshot.reshape(-1,) * (dx*dx)
+        # mask out pixels beyond xmax
+        gvals = rval > xmax
+        snapshotflat[gvals] = np.nan
 
+        # — NEW: only keep the unmasked points for R, φ, and “mass” —
+        mask       = ~np.isnan(snapshotflat)
+        rval_mask  = rval [mask]
+        phi_mask   = phi  [mask]
+        mass_mask  = snapshotflat[mask]
+
+        # call LaguerreAmplitudes on the masked arrays so all lengths agree
+        laguerre = LaguerreAmplitudes(
+            rscl, mmax, nmax,
+            rval_mask,      # 1D array of radii
+            phi_mask,       # 1D array of angles
+            mass=mass_mask  # 1D array of pixel masses
+        )
         self.r = rr
         self.p = pp
         return laguerre
