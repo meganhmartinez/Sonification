@@ -35,6 +35,7 @@ class DiscGalaxy(object):
             self.x,self.y,self.z,self.u,self.v,self.w = phasespace
             self.N = len(self.x)
             
+        self.mass=np.ones_like(self.x) * (self.M/self.N)  # assume equal mass for each particle
     def _generate_basic_disc_points(self):
         """generate a flat exponential disc, just for demo purposes"""
         
@@ -213,7 +214,7 @@ class DiscGalaxy(object):
         snapshotflat[gvals] = np.nan
 
         laguerre = LaguerreAmplitudes(rscl,mmax,nmax,rval,phi,snapshotflat) """
-        snapshotflat = snapshot.reshape(-1,) * (dx*dx)
+        snapshotflat = snapshot.reshape(-1,)
         # mask out pixels beyond xmax
         gvals = rval > xmax
         snapshotflat[gvals] = np.nan
