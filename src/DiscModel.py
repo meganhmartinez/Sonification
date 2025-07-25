@@ -42,9 +42,8 @@ class DiscGalaxy(object):
         x = np.linspace(0.,self.rmax,10000)
 
         # define the mass enclosed for an exponential disc
-        def menclosed(r,a=self.a,m=self.M):
-            return m*(1.0 - np.exp(-r/a)*(1.0+r/a))
-
+        def menclosed(r,a=self.a):
+            return (1.0 - np.exp(-r/a)*(1.0+r/a))
         
         f = interpolate.interp1d(menclosed(x),x)
 
