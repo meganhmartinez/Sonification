@@ -175,7 +175,7 @@ class DiscGalaxy(object):
         y_range = (-rmax, rmax)  # range for the y-axis
 
         # Compute the 2D histogram
-        img, self.x_edges, self.y_edges = np.histogram2d(self.x, self.y, bins=[nbins, nbins],range=[x_range, y_range])
+        img, self.x_edges, self.y_edges = np.histogram2d(self.x, self.y, weights=self.mass,bins=[nbins, nbins],range=[x_range, y_range])
 
         self.img = img.T
 
